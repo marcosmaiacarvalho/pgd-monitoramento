@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR" th:replace="~{layout :: oEsqueletoGeral(~{:: #conteudo})}" xmlns:th="http://www.thymeleaf.org">
+
+<div id="conteudo">
+
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Consulta por Pendência da Chefia (Planos Completos não Avaliados)</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/painel">Início</a></li>
+                        <li class="breadcrumb-item active">Pendência da Chefia</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="container-fluid">
+
+            <div th:if="${pagina != null}">
+
+                <div th:replace="~{componentes :: botaoExportarCsv('/view/planos/pendencia-chefia?format=csv')}"></div>
+
+                <div th:replace="~{componentes :: agrupamentoUnidadeServidoresPlanos(${pagina.content})}"></div>
+
+                <div th:replace="~{componentes :: paginacaoPadrao(${pagina}, '/view/planos/pendencia-chefia')}"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</html>

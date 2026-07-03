@@ -1,0 +1,285 @@
+<div xmlns:th="http://www.thymeleaf.org">
+
+    <!--INÍCIO DO AGRUPAMENTO POR UNIDADE-> SERVIDORES -> PLANOS-->
+    <div th:fragment="agrupamentoUnidadeServidoresPlanos(dados)">
+
+        <div class="callout callout-warning bg-white shadow-sm mb-4 py-2">
+            <h5 class="text-warning font-weight-bold mb-1" style="color: #d39e00 !important;">
+                <i class="fas fa-tasks mr-2"></i>Pendências por Unidade
+            </h5>
+            <p class="text-muted text-sm mb-0">
+                Exibindo as unidades e os respectivos servidores com planos aguardando avaliação da chefia.
+            </p>
+        </div>
+
+        <div class="alert alert-success alert-dismissible" th:if="${#lists.isEmpty(dados)}">
+            <h5><i class="icon fas fa-check"></i> Tudo certo!</h5>
+            Nenhuma pendência de avaliação foi encontrada para os critérios informados.
+        </div>
+
+        <div class="card card-warning card-outline mb-4 shadow-sm" th:each="unidade : ${dados}">
+
+            <div class="card-header bg-light">
+                <h3 class="card-title font-weight-bold" style="font-size: 1.25rem;">
+                    <i class="fas fa-building mr-2 text-warning"></i>
+                    Unidade: <span th:text="${unidade.siglaUnidade}">SIGLA</span>
+                </h3>
+                <div class="card-tools">
+                    <button class="btn btn-tool" data-card-widget="collapse" type="button">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-body">
+
+                <p class="text-muted text-bold mb-3"><i class="fas fa-users mr-1"></i> Selecione o servidor para
+                    visualizar
+                    o(s) plano(s):</p>
+
+                <div class="row mb-3">
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-3" th:each="servidor : ${unidade.usuariosComPlanos}">
+
+                        <div class="card h-100 card-outline card-secondary text-center p-2 mb-0 shadow-sm"
+                            data-toggle="collapse"
+                            onmouseout="this.style.transform='scale(1)'; this.style.borderWidth='1px';"
+                            onmouseover="this.style.transform='scale(1.03)'; this.style.borderWidth='2px';"
+                            style="cursor: pointer; transition: transform 0.2s;"
+                            th:aria-controls="'collapse-' + ${unidade.siglaUnidadeParaHtml} + '-' + ${servidor.usuario.matricula}"
+                            th:data-target="'#collapse-' + ${unidade.siglaUnidadeParaHtml} + '-' + ${servidor.usuario.matricula}">
+
+                            <div class="card-body p-2 d-flex flex-column justify-content-center align-items-center">
+                                <i class="fas fa-user-circle text-secondary mb-2" style="font-size: 1.5rem;"></i>
+                                <span class="font-weight-bold text-dark text-md" th:text="${servidor.usuario.nome}">Nome
+                                    do Servidor</span>
+                                <span class="text-muted text-sm mb-2"
+                                    th:text="${servidor.usuario.matricula}">Matrícula</span>
+                                <span class="badge badge-pill badge-warning mt-1"
+                                    th:text="${servidor.planos.size()} + ' pendente(s)'"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="accordion" th:id="'container-planos-' + ${unidade.siglaUnidadeParaHtml}">
+
+                    <div class="collapse" th:data-parent="'#container-planos-' + ${unidade.siglaUnidadeParaHtml}"
+                        th:each="servidor : ${unidade.usuariosComPlanos}"
+                        th:id="'collapse-' + ${unidade.siglaUnidadeParaHtml} + '-' + ${servidor.usuario.matricula}">
+
+                        <div class="card card-body border shadow-sm p-3 bg-white mt-2">
+                            <h5 class="text-secondary font-weight-bold mb-3">
+                                <i class="fas fa-folder-open mr-2"></i>
+                                Planos de <span th:text="${servidor.usuario.nome}"></span> aguardando avaliação:
+                            </h5>
+
+                            <div th:replace="~{:: tabelaPlanos(${servidor.planos})}"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <!--FIM DO AGRUPAMENTO POR UNIDADE -> SERVIDORES -> PLANOS-->
+
+
+    <!--INÍCIO DO AGRUPAMENTO POR SERVIDOR -> UNIDADES-> PLANOS-->
+    <div th:fragment="agrupamentoServidorUnidadePlanos(dados)">
+
+        <div class="callout callout-primary bg-white shadow-sm mb-4 py-2">
+            <h5 class="text-primary font-weight-bold mb-1">
+                <i class="fas fa-search-plus mr-2"></i>Resultados da Busca
+            </h5>
+            <p class="text-muted text-sm mb-0">
+                Exibindo o histórico de planos de trabalho com base no filtro aplicado.
+            </p>
+        </div>
+
+
+        <div class="alert alert-warning alert-dismissible" th:if="${#lists.isEmpty(dados)}">
+            <h5><i class="icon fas fa-exclamation-triangle"></i> Atenção!</h5>
+            Nenhum plano de trabalho foi encontrado para os critérios informados.
+        </div>
+
+        <div class="card card-info card-outline mb-4 shadow-sm" th:each="servidor : ${dados}">
+
+            <div class="card-header bg-light">
+                <h3 class="card-title font-weight-bold" style="font-size: 1.25rem;">
+                    <i class="fas fa-user-circle mr-2 text-info"></i>
+                    <span th:text="${servidor.usuario.nome}">Nome do Servidor</span>
+                </h3>
+                <div class="card-tools">
+                    <button class="btn btn-tool" data-card-widget="collapse" type="button">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-body">
+
+                <div class="row mb-4 bg-light p-2 rounded border mx-0">
+                    <div class="col-md-4">
+                        <span class="text-muted"><i class="fas fa-id-badge mr-1"></i> Matrícula: </span>
+                        <strong th:text="${servidor.usuario.matricula}"></strong>
+                    </div>
+                    <div class="col-md-5">
+                        <span class="text-muted"><i class="fas fa-envelope mr-1"></i> E-mail: </span>
+                        <strong th:text="${servidor.usuario.email}"></strong>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="text-muted"><i class="fas fa-sitemap mr-1"></i> Lotação Atual: </span>
+                        <strong th:text="${servidor.usuario.unidadeAtual}"></strong>
+                    </div>
+                </div>
+
+                <p class="text-muted text-bold mb-2"><i class="fas fa-th-large mr-1"></i> Selecione uma unidade
+                    para
+                    ver os planos:</p>
+
+                <div class="row mb-3">
+                    <div class="col-lg-2 col-md-3 col-sm-4 col-6 mb-3" th:each="unidade : ${servidor.unidades}">
+
+                        <div class="card h-100 card-outline card-primary text-center p-2 mb-0 shadow-sm"
+                            data-toggle="collapse"
+                            onmouseout="this.style.transform='scale(1)'; this.style.borderWidth='1px';"
+                            onmouseover="this.style.transform='scale(1.05)'; this.style.borderWidth='2px';"
+                            style="cursor: pointer; transition: transform 0.2s;"
+                            th:aria-controls="'collapse-' + ${servidor.usuario.matricula} + '-' + ${unidade.siglaUnidadeParaHtml}"
+                            th:data-target="'#collapse-' + ${servidor.usuario.matricula} + '-' + ${unidade.siglaUnidadeParaHtml}">
+                            <!--O card com o nome da unidade, aponta para a div com essa combinação de dados-->
+
+                            <div class="card-body p-1 d-flex flex-column justify-content-center align-items-center">
+                                <i class="fas fa-building text-primary mb-2" style="font-size: 1.5rem;"></i>
+                                <span class="font-weight-bold text-dark text-md"
+                                    th:text="${unidade.siglaUnidade}">SIGLA</span>
+                                <span class="badge badge-pill badge-secondary mt-2"
+                                    th:text="${unidade.planos.size()} + ' plano(s)'"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Container pai do servidor, acredito eu que seja o card principal do servidor-->
+                <div class="accordion" th:id="'container-planos-' + ${servidor.usuario.matricula}">
+
+                    <!-- Aqui, como eu já trato no backend, minha caixa de unidade já aponta pro container pai do servidor -->
+                    <div class="collapse" th:data-parent="'#container-planos-' + ${servidor.usuario.matricula}"
+                        th:each="unidade : ${servidor.unidades}"
+                        th:id="'collapse-' + ${servidor.usuario.matricula} + '-' + ${unidade.siglaUnidadeParaHtml}">
+                        <!--  Eu crio o id final aqui, matricula + unidade -->
+
+                        <div class="card card-body border shadow-sm p-3 bg-white mt-2">
+                            <h5 class="text-primary font-weight-bold mb-3">
+                                <i class="fas fa-folder-open mr-2"></i>
+                                Planos de Trabalho executados na <span th:text="${unidade.siglaUnidade}"></span>
+                            </h5>
+
+                            <div th:replace="~{:: tabelaPlanos(${unidade.planos})}"></div>
+                            <!-- Aqui eu reutilizo meu fragmento das tabelas -->
+                        </div>
+
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+    <!--FIM DO AGRUPAMENTO POR SERVIDOR -> UNIDADES-> PLANOS-->
+
+
+    <!--TABELAS DOS PLANOS-->
+    <div th:fragment="tabelaPlanos(planos)">
+        <div class="table-responsive">
+
+            <table class="table table-striped table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Vigência</th>
+                        <th>Data de Início</th>
+                        <th>Data Fim</th>
+                        <th>Unidade</th>
+                        <th>Status da Execução</th>
+                        <th>% Entregue</th>
+                        <th>Meta</th>
+                        <th>Horas Entregues</th>
+                        <th>Avaliação</th>
+                        <th>Homologação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="plano : ${planos}">
+                        <td th:text="${#temporals.format(plano.vigencia, 'MM/yyyy')}"></td>
+                        <td th:text="${#temporals.format(plano.inicioVigencia, 'dd/MM/yyyy')}"></td>
+                        <td th:text="${#temporals.format(plano.fimVigencia, 'dd/MM/yyyy')}"></td>
+                        <td th:text="${plano.siglaUnidadePlano}"></td>
+                        <td th:text="${plano.statusExecucao}"></td>
+                        <td th:text="${#numbers.formatDecimal(plano.percentualEntregue, 1, 1, 'COMMA')} + '%'"></td>
+                        <td th:text="${plano.metaPlano}"></td>
+                        <td th:text="${plano.tempoEntregue}"></td>
+
+                        <td>
+                            <span class="badge badge-success" th:if="${plano.statusAvaliacao}">AVALIADO</span>
+                            <span class="badge badge-warning" th:unless="${plano.statusAvaliacao}">NÃO
+                                AVALIADO</span>
+                        </td>
+
+                        <td>
+                            <span class="badge badge-success" th:if="${plano.statusHomologacao}">HOMOLOGADO</span>
+                            <span class="badge badge-warning" th:unless="${plano.statusHomologacao}">NÃO
+                                HOMOLOGADO</span>
+                        </td>
+
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+    <!--FIM TABELAS DOS PLANOS-->
+
+    <!--INÍCIO FRAGMENT PAGINAÇÃO-->
+    <div th:fragment="paginacaoPadrao(paginaObj, urlBase)">
+        <nav th:if="${paginaObj.totalPages > 1}" aria-label="Navegação de páginas" class="mt-4">
+            <ul class="pagination justify-content-center">
+
+                <li class="page-item" th:classappend="${paginaObj.first ? 'disabled' : ''}">
+                    <a class="page-link"
+                        th:href="@{${urlBase}(page=${paginaObj.number - 1}, inicioVigencia=${param.inicioVigencia}, fimVigencia=${param.fimVigencia})}"
+                        tabindex="-1">Anterior</a>
+                </li>
+
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, paginaObj.totalPages - 1)}"
+                    th:classappend="${paginaObj.number == i ? 'active' : ''}">
+
+                    <a class="page-link"
+                        th:href="@{${urlBase}(page=${i}, inicioVigencia=${param.inicioVigencia}, fimVigencia=${param.fimVigencia})}"
+                        th:text="${i + 1}">1</a>
+                </li>
+
+                <li class="page-item" th:classappend="${paginaObj.last ? 'disabled' : ''}">
+                    <a class="page-link"
+                        th:href="@{${urlBase}(page=${paginaObj.number + 1}, inicioVigencia=${param.inicioVigencia}, fimVigencia=${param.fimVigencia})}">Próximo</a>
+                </li>
+
+            </ul>
+        </nav>
+    </div>
+    <!--FIM FRAGMENT PAGINAÇÃO-->
+    
+
+    <div th:fragment="botaoExportarCsv(urlBase)">
+        <a class="btn btn-success mb-3 shadow-sm"
+            th:href="@{${urlBase}(format='csv', inicioVigencia=${param.inicioVigencia}, fimVigencia=${param.fimVigencia})}">
+            <i class="fas fa-file-csv mr-2"></i> Exportar Relatório (CSV)
+        </a>
+    </div>
+
+
+</div>

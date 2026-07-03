@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR" th:replace="~{layout :: oEsqueletoGeral(~{:: #conteudo})}" xmlns:th="http://www.thymeleaf.org">
+
+<div id="conteudo">
+
+    <!-- Cabeçalho da página -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Consulta por Servidor</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/painel">Início</a></li>
+                        <li class="breadcrumb-item active">Por Servidor</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Conteúdo -->
+    <div class="content">
+        <div class="container-fluid">
+
+            <!-- Formulário de busca -->
+            <div class="card">
+                <div class="card-body">
+                    <form action="/view/planos/por-servidor" method="GET">
+                        <div class="input-group">
+                            <input class="form-control" inputmode="numeric" name="matricula" pattern="[0-9]*"
+                                placeholder="Digite a matrícula SIAPE" type="text" required
+                                oninvalid="this.setCustomValidity('Esse campo não pode estar vazio e deve conter somente números.')"
+                                oninput="this.setCustomValidity('')">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="fas fa-search"></i> Buscar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Resultados -->
+            <div th:if="${dadosBackend != null}">
+
+                <!-- Dados do servidor-->
+                <div th:replace="~{componentes :: agrupamentoServidorUnidadePlanos(${dadosBackend})}">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR" th:replace="~{layout :: oEsqueletoGeral(~{:: #conteudo})}" xmlns:th="http://www.thymeleaf.org">
+
+<div id="conteudo">
+    
+
+    <form th:action="${endpointDestino}" method="GET">
+
+        <div class="row" id="camposData">
+
+            <div class="col-md-6 mb-3">
+                <label for="inicioVigencia">Mês Inicial:</label>
+                <input class="form-control" id="inicioVigencia" min="2024-06" name="inicioVigencia"
+                       th:max="${maxPeriodo}"
+                       type="month" required
+                       oninvalid="this.setCustomValidity('Selecione um mês/ano inicial ou marque a opção abaixo: Trazer todo o período')"
+                       oninput="this.setCustomValidity('')">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="fimVigencia">Mês Final:</label>
+                <input class="form-control" id="fimVigencia" min="2024-06" name="fimVigencia" th:max="${maxPeriodo}"
+                       type="month" required
+                       oninvalid="this.setCustomValidity('Selecione um mês/ano final ou marque a opção abaixo: Trazer todo o período')"
+                       oninput="this.setCustomValidity('')">
+                       
+            </div>
+
+        </div>
+
+        <div class="form-group clearfix">
+            <div class="icheck-primary d-inline">
+                <input id="trazerTudo" name="trazerTudo" onclick="toggleDatas()" type="checkbox">
+                <label for="trazerTudo">
+                    Trazer todo o período (06-2024 até o último mês fechado).
+                </label>
+            </div>
+        </div>
+
+        <button class="btn btn-primary btn-block" type="submit">
+            <i class="fas fa-filter mr-2"></i> Gerar Relatório
+        </button>
+    </form>
+
+    <script>
+        function toggleDatas() {
+            var checkbox = document.getElementById("trazerTudo");
+            var inicio = document.getElementById("inicioVigencia");
+            var fim = document.getElementById("fimVigencia");
+
+            // Se marcou "trazer tudo", desabilita e limpa os campos de data (mandando null pro Java)
+            if (checkbox.checked) {
+                inicio.disabled = true;
+                fim.disabled = true;
+                inicio.value = "";
+                fim.value = "";
+            } else {
+                inicio.disabled = false;
+                fim.disabled = false;
+            }
+        }
+    </script>
+
+</div>
+
+</html>
