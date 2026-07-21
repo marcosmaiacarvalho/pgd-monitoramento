@@ -102,5 +102,25 @@ public class PlanoViewController {
 
     }
 
+    @GetMapping(value = "/pendencia-servidor", params = "format=csv")
+    public void exportarPendenciaServidor(@RequestParam(required = false) YearMonth inicioVigencia,
+                                          @RequestParam(required = false) YearMonth fimVigencia,
+                                          HttpServletResponse response) {
+
+        response.setContentType("text/csv; charset=UTF-8");
+        response.setHeader("Content-Disposition", "attachment; filename=pendencias-chefia.csv");
+
+        try {
+            PrintWriter writer = response.getWriter();
+            writer.write('\uFEFF');
+
+            planoService.exportarIncompletosParaCsv(inicioVigencia, fimVigencia, writer);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Erro de I/O ao tentar enviar o arquivo CSV para o navegador.");
+        }
+
+    }
+
 
 }

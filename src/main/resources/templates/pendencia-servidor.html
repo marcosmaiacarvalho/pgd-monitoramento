@@ -27,6 +27,9 @@
         <div class="container-fluid">
 
             <div th:if="${pagina != null}">
+
+                <div th:replace="~{componentes :: botaoExportarCsv('/view/planos/pendencia-servidor?format=csv')}"></div>
+
                 <div th:replace="~{componentes :: agrupamentoServidorUnidadePlanos(${pagina.content})}"></div>
 
                 <div th:replace="~{componentes :: paginacaoPadrao(${pagina}, '/view/planos/pendencia-servidor')}"></div>
