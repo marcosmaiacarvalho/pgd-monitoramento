@@ -45,9 +45,16 @@ public class PlanoViewController {
             default -> "";
         };
 
+        // Pendência da chefia usa o prazo de avaliação (mês atual - 2) como limite de seleção;
+        // as demais consultas usam o último mês fechado (mês atual - 1).
+        YearMonth maxPeriodo = "pendencia-chefia".equals(tipoConsulta)
+                ? DataUtils.getMesAnoLimitePrazoAvaliacao()
+                : DataUtils.getMesAnoLimiteFim();
+
         model.addAttribute("endpointDestino", endpointDestino);
         model.addAttribute("minPeriodo", DataUtils.getMesAnoLimiteInicio());
-        model.addAttribute("maxPeriodo", DataUtils.getMesAnoLimiteFim());
+        model.addAttribute("maxPeriodo", maxPeriodo);
+        model.addAttribute("tipoConsulta", tipoConsulta);
 
         return "filtro-periodo";
     }
@@ -55,10 +62,10 @@ public class PlanoViewController {
     @GetMapping("/por-periodo")
     public String buscarPorPeriodo(@RequestParam(required = false) YearMonth inicioVigencia,
                                    @RequestParam(required = false) YearMonth fimVigencia,
-                                   Model model) {
+                                   Model model, Pageable pageable) {
 
-        List<UsuarioUnidadesDTO> planosDTO = planoService.buscarPlanosPorPeriodo(inicioVigencia, fimVigencia);
-        model.addAttribute("dadosBackend", planosDTO);
+        Page<UsuarioUnidadesDTO> pagina = planoService.buscarPlanosPorPeriodoPaginados(inicioVigencia, fimVigencia, pageable);
+        model.addAttribute("pagina", pagina);
         return "por-periodo";
     }
 
@@ -108,7 +115,7 @@ public class PlanoViewController {
                                           HttpServletResponse response) {
 
         response.setContentType("text/csv; charset=UTF-8");
-        response.setHeader("Content-Disposition", "attachment; filename=pendencias-chefia.csv");
+        response.setHeader("Content-Disposition", "attachment; filename=pendencias-servidor.csv");
 
         try {
             PrintWriter writer = response.getWriter();

@@ -5,6 +5,20 @@
 <div id="conteudo">
     
 
+    <!-- Card explicativo: escolhido conforme o tipo de consulta (th:switch).
+         Os th:block são "portões" invisíveis: só o case correspondente é renderizado. -->
+    <th:block th:switch="${tipoConsulta}">
+        <th:block th:case="'pendencia-servidor'">
+            <div th:replace="~{componentes :: cardExplicativo('fas fa-user-clock', 'Pendência do Servidor', 'Lista os planos em que o servidor <strong>registrou menos horas do que a meta prevista</strong> para o período e que <strong>ainda não foram avaliados</strong>. São as pendências que dependem de ação do próprio servidor.', null)}"></div>
+        </th:block>
+        <th:block th:case="'pendencia-chefia'">
+            <div th:replace="~{componentes :: cardExplicativo('fas fa-user-tie', 'Pendência da Chefia', 'Lista os planos em que o servidor <strong>cumpriu a meta de horas prevista</strong>, mas que <strong>ainda não foram avaliados pela chefia</strong>. São as pendências que dependem de ação da chefia imediata.', 'O período considera até o prazo final de avaliação (mês atual − 2), pois os dois últimos meses ainda estão dentro do prazo.')}"></div>
+        </th:block>
+        <th:block th:case="'por-periodo'">
+            <div th:replace="~{componentes :: cardExplicativo('fas fa-calendar-alt', 'Consulta por Período', 'Retorna <strong>todos os planos de trabalho vigentes no período informado</strong>, independentemente da situação — completos ou não, avaliados ou não. Consulta geral, sem filtro de pendência.', null)}"></div>
+        </th:block>
+    </th:block>
+
     <form th:action="${endpointDestino}" method="GET">
 
         <div class="row" id="camposData">

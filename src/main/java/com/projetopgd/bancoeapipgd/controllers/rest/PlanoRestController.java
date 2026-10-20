@@ -3,6 +3,7 @@ package com.projetopgd.bancoeapipgd.controllers.rest;
 
 import com.projetopgd.bancoeapipgd.dtos.responses.aggregates.UnidadeUsuariosDTO;
 import com.projetopgd.bancoeapipgd.dtos.responses.aggregates.UsuarioUnidadesDTO;
+import com.projetopgd.bancoeapipgd.services.responses.DashboardService;
 import com.projetopgd.bancoeapipgd.services.responses.PlanoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ import java.util.List;
 public class PlanoRestController {
 
     private final PlanoService planoService;
+    private final DashboardService dashboardService;
 
     @GetMapping("por-servidor/{matricula}")
     public ResponseEntity<List<UsuarioUnidadesDTO>> buscarPorMatricula(@PathVariable String matricula) {
@@ -27,10 +29,11 @@ public class PlanoRestController {
     }
 
     @GetMapping("/por-periodo")
-    public ResponseEntity<List<UsuarioUnidadesDTO>> buscarPorPeriodo(@RequestParam(required = false) YearMonth inicioVigencia,
-                                                                     @RequestParam(required = false) YearMonth fimVigencia) {
+    public ResponseEntity<Page<UsuarioUnidadesDTO>> buscarPorPeriodo(@RequestParam(required = false) YearMonth inicioVigencia,
+                                                                     @RequestParam(required = false) YearMonth fimVigencia,
+                                                                     Pageable pageable) {
 
-        List<UsuarioUnidadesDTO> planosDTO = planoService.buscarPlanosPorPeriodo(inicioVigencia, fimVigencia);
+        Page<UsuarioUnidadesDTO> planosDTO = planoService.buscarPlanosPorPeriodoPaginados(inicioVigencia, fimVigencia, pageable);
         return ResponseEntity.ok(planosDTO);
     }
 

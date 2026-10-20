@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR" th:replace="~{layout :: oEsqueletoGeral(~{:: #conteudo})}" xmlns:th="http://www.thymeleaf.org">
+
+<div id="conteudo">
+
+    <!-- Estilo suave (pastel) dos mini-cards de números dentro dos donuts -->
+    <style>
+        .stat-suave {
+            border-radius: .55rem;
+            padding: .6rem .25rem;
+            cursor: help; /* dica sutil de que há explicação no hover */
+        }
+        .stat-suave.suave-vermelho { background: #fdeaea; color: #d64545; }
+        .stat-suave.suave-amarelo  { background: #fdf5e1; color: #c69100; }
+        .stat-suave.suave-verde    { background: #e6f6ee; color: #1f9450; }
+        .stat-suave .stat-icone { font-size: 1rem; opacity: .9; }
+        .stat-suave .stat-num   { font-size: 1.4rem; font-weight: 700; line-height: 1.2; color: #343a40; }
+        .stat-suave .stat-label { font-size: .72rem; color: #8a94a6; text-transform: uppercase; letter-spacing: .3px; }
+    </style>
+
+    <!-- Cabeçalho da página -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Monitoramento de Planos de Trabalho</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/view/dashboard">Planos de Trabalho</a></li>
+                        <li class="breadcrumb-item active">Painel</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Conteúdo -->
+    <div class="content">
+        <div class="container-fluid">
+
+            <!-- Nota institucional: os números são de planos, não de servidores -->
+            <div class="callout callout-info bg-white shadow-sm p-3 mb-4">
+                <p class="text-muted mb-0">
+                    <i class="fas fa-info-circle mr-2 text-info" style="font-size: 1.2rem;"></i>
+                    Os números referem-se a <strong>planos de trabalho</strong>, não a servidores. Um mesmo servidor pode
+                    possuir mais de um plano no período (ex.: transferência de unidade), e planos ainda não criados pelos
+                    servidores não são contabilizados.
+                </p>
+            </div>
+
+            <!-- Donuts (fragment reaproveitável) -->
+            <div class="row">
+                <div th:replace="~{componentes :: cardDonut('Mês Passado', ${dadosDashboard.resumoMesPassado}, 'grafico-donut-mes-passado', 'card-info')}"></div>
+                <div th:replace="~{componentes :: cardDonut('Mês Retrasado', ${dadosDashboard.resumoMesRetrasado}, 'grafico-donut-mes-retrasado', 'card-warning')}"></div>
+                <div th:replace="~{componentes :: cardDonut('Total Geral', ${dadosDashboard.resumoPeriodoCompleto}, 'grafico-donut-total', 'card-secondary')}"></div>
+            </div>
+
+            <!-- Rankings Top 5 (fragment reaproveitável) -->
+            <div class="row">
+                <div th:replace="~{componentes :: cardTop5('Pendência do Servidor', ${dadosDashboard.resumoPeriodoCompleto}, 'grafico-top5-servidor', 'card-danger')}"></div>
+                <div th:replace="~{componentes :: cardTop5('Pendência da Chefia', ${dadosDashboard.resumoPeriodoCompleto}, 'grafico-top5-chefia', 'card-warning')}"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ============================ SCRIPTS ============================ -->
+
+    <!-- Biblioteca de gráficos (vendorizada localmente, igual jquery/bootstrap) -->
+    <script src="/plugins/chartjs/chart.umd.min.js"></script>
+
+    <!-- Configuração dos gráficos deste projeto -->
+    <script src="/js/dashboard.js"></script>
+
+    <!-- Ponte entre o Model (Thymeleaf) e o JavaScript dos gráficos -->
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const dadosGraficos = {
+                mesPassado: {
+                    total: [[${dadosDashboard.resumoMesPassado.qtdTotal}]],
+                    chefia: [[${dadosDashboard.resumoMesPassado.qtdPendenciaChefia}]],
+                    servidor: [[${dadosDashboard.resumoMesPassado.qtdPendenciaServidor}]]
+                },
+                mesRetrasado: {
+                    total: [[${dadosDashboard.resumoMesRetrasado.qtdTotal}]],
+                    chefia: [[${dadosDashboard.resumoMesRetrasado.qtdPendenciaChefia}]],
+                    servidor: [[${dadosDashboard.resumoMesRetrasado.qtdPendenciaServidor}]]
+                },
+                total: {
+                    total: [[${dadosDashboard.resumoPeriodoCompleto.qtdTotal}]],
+                    chefia: [[${dadosDashboard.resumoPeriodoCompleto.qtdPendenciaChefia}]],
+                    servidor: [[${dadosDashboard.resumoPeriodoCompleto.qtdPendenciaServidor}]]
+                },
+                top5Servidor: {
+                    labels: [[${dadosDashboard.unidadesComPendenciaServidor.![siglaUnidade]}]],
+                    valores: [[${dadosDashboard.unidadesComPendenciaServidor.![qtdPendencia]}]]
+                },
+                top5Chefia: {
+                    labels: [[${dadosDashboard.unidadesComPendenciaChefia.![siglaUnidade]}]],
+                    valores: [[${dadosDashboard.unidadesComPendenciaChefia.![qtdPendencia]}]]
+                }
+            };
+
+            iniciarGraficosDashboard(dadosGraficos);
+
+            // Ativa os tooltips das pendências (Bootstrap via jQuery — já carregado no layout).
+            if (window.jQuery) {
+                window.jQuery('[data-toggle="tooltip"]').tooltip();
+            }
+        });
+    </script>
+
+</div>
+
+</html>

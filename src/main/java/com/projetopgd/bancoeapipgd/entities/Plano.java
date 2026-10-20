@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -17,37 +18,27 @@ import java.time.LocalDate;
 @Table(name = "tb_planos")
 public class Plano {
 
+
     @Id
     @EqualsAndHashCode.Include
     private Long id;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
-
     private String siglaUnidade;
-
     private Boolean estaAvaliado;
-
     private Double tempoTotal; //horas brutas do mês
-
     private Double tempoProporcional; //após afastamentos registrados
-
     private Double tempoPactuado; //prometido pelo servidor
-
     private Double tempoEntregue; //efetivamente entregue pelo servidor
-
     private LocalDate inicioVigencia;
-
     private LocalDate fimVigencia;
-
     private LocalDate homologacao;
-
     private LocalDate arquivamento;
-
     private Boolean estaHomologado;
+    private LocalDateTime sincronizadoEm;
 
-    public Plano(PlanoImportDTO dto) {
+    public Plano(PlanoImportDTO dto, LocalDateTime sincronizadoEm) {
         this.id = dto.getId();
         this.usuario = new Usuario(dto.getUsuario().getId());
         this.siglaUnidade = dto.getSiglaUnidade();
@@ -58,9 +49,9 @@ public class Plano {
         this.tempoEntregue = dto.getTempoEntregue();
         this.inicioVigencia = dto.getInicioVigencia();
         this.fimVigencia = dto.getFimVigencia();
-        this.homologacao = dto.getHomologacao();
         this.arquivamento = dto.getArquivamento();
         this.estaHomologado = dto.getEstaHomologado();
+        this.sincronizadoEm = sincronizadoEm;
     }
 
     public Double calcularSaldoDeHoras() {
@@ -71,7 +62,7 @@ public class Plano {
         if (tempoProporcional == null || tempoProporcional == 0.0) {
             return 0.0; //Possível 100% caso tempoProporcional == 0.0, pois se prevê 0.0 e fez 0.0, 100% entregue.
         }
-        Double percentualEntregue = tempoEntregue / tempoProporcional * 100;
+        Double percentualEntregue = tempoEntregue / tempoProporcional * 100.0;
         return Math.floor(percentualEntregue * 10.0) / 10.0;
     }
 
@@ -90,6 +81,10 @@ public class Plano {
         } else {
             return StatusExecucao.DEVENDO_HORAS;
         }
+    }
+
+    public boolean estaIncompleto() {
+        return tempoEntregue < tempoProporcional;
     }
 
 }

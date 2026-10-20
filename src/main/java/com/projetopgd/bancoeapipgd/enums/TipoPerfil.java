@@ -17,6 +17,10 @@ public enum TipoPerfil {
     USUARIO_AUTONOMO,
 
     @JsonProperty("Visualizador")
-    VISUALIZADOR
+    VISUALIZADOR,
 
+    @JsonProperty("Assessor")
+    ASSESSOR,
+
+    SEM_PERFIL;
 }

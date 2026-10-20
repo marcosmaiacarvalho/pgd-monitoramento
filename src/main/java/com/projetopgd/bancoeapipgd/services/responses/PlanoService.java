@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -67,7 +66,7 @@ public class PlanoService {
     public Page<UnidadeUsuariosDTO> buscarPlanosNaoAvaliadosPaginados(YearMonth inicioVigencia, YearMonth fimVigencia, Pageable pageable) {
 
         LocalDate dataInicioVigencia = DataUtils.converterMesAnoParaInicioDoMesOuBuscarPadrao(inicioVigencia);
-        LocalDate dataFimVigencia = DataUtils.converterMesAnoParaFimDoMesOuBuscarPadrao(fimVigencia);
+        LocalDate dataFimVigencia = DataUtils.converterMesAnoParaFimDoMesOuBuscarPrazoAvaliacao(fimVigencia);
 
         Page<String> siglasUnidades = planoRepository.buscarSiglasUnidadesPaginadasPorPlanosNaoAvaliados(dataInicioVigencia, dataFimVigencia, pageable);
         List<Plano> planos = planoRepository.buscarPlanosNaoAvaliadosPorSiglasUnidades(dataInicioVigencia, dataFimVigencia, siglasUnidades.getContent());
@@ -79,28 +78,29 @@ public class PlanoService {
     }
 
     @Transactional(readOnly = true)
-    public List<UsuarioUnidadesDTO> buscarPlanosPorPeriodo(YearMonth inicioVigencia, YearMonth fimVigencia) {
+    public Page<UsuarioUnidadesDTO> buscarPlanosPorPeriodoPaginados(YearMonth inicioVigencia, YearMonth fimVigencia, Pageable pageable) {
 
         LocalDate dataInicioVigencia = DataUtils.converterMesAnoParaInicioDoMesOuBuscarPadrao(inicioVigencia);
         LocalDate dataFimVigencia = DataUtils.converterMesAnoParaFimDoMesOuBuscarPadrao(fimVigencia);
 
-        List<Plano> planos = planoRepository.findByVigencia(dataInicioVigencia, dataFimVigencia);
+        Page<Long> idsUsuarios = planoRepository.buscarIdsUsuariosPaginadosPorPeriodo(dataInicioVigencia, dataFimVigencia, pageable);
+        List<Plano> planos = planoRepository.buscarTodosOsPlanosPorIdsUsuarios(dataInicioVigencia, dataFimVigencia, idsUsuarios.getContent());
 
-        //Map para realizar agrupamentos percorrendo a List somente 1 vez.
         Map<Usuario, Map<String, List<Plano>>> planosPorServidor = planoAgregador.agruparPorServidorUnidade(planos);
+        List<UsuarioUnidadesDTO> usuariosUnidades = planoAgregador.montarListaDeUsuarios(planosPorServidor);
 
-        return planoAgregador.montarListaDeUsuarios(planosPorServidor);
+        return new PageImpl<>(usuariosUnidades, pageable, idsUsuarios.getTotalElements());
     }
 
     @Transactional(readOnly = true)
     public void exportarNaoAvaliadosParaCsv(YearMonth inicioVigencia, YearMonth fimVigencia, PrintWriter writer) {
-        List<Plano> planos = buscarPlanosNaoAvaliados(inicioVigencia, fimVigencia);
+        List<Plano> planos = buscarPlanosCompletosNaoAvaliados(inicioVigencia, fimVigencia);
         converterParaCsv(planos, writer);
     }
 
     @Transactional(readOnly = true)
     public void exportarIncompletosParaCsv(YearMonth inicioVigencia, YearMonth fimVigencia, PrintWriter writer) {
-        List<Plano> planos = buscarPlanosIncompletos(inicioVigencia, fimVigencia);
+        List<Plano> planos = buscarPlanosIncompletosNaoAvaliados(inicioVigencia, fimVigencia);
         converterParaCsv(planos, writer);
     }
 
@@ -108,18 +108,32 @@ public class PlanoService {
     // 2. CONSULTAS AO BANCO COMPARTILHADAS
     // ========================================================================
 
-    private List<Plano> buscarPlanosNaoAvaliados(YearMonth inicioVigencia, YearMonth fimVigencia) {
+    protected List<Plano> buscarPlanosCompletosNaoAvaliados(YearMonth inicioVigencia, YearMonth fimVigencia) {
         LocalDate dataInicioVigencia = DataUtils.converterMesAnoParaInicioDoMesOuBuscarPadrao(inicioVigencia);
-        LocalDate dataFimVigencia = DataUtils.converterMesAnoParaFimDoMesOuBuscarPadrao(fimVigencia);
+        LocalDate dataFimVigencia = DataUtils.converterMesAnoParaFimDoMesOuBuscarPrazoAvaliacao(fimVigencia);
 
-        return planoRepository.buscarPorVigenciaNaoAvaliados(dataInicioVigencia, dataFimVigencia);
+        return planoRepository.buscarPorVigenciaCompletosNaoAvaliados(dataInicioVigencia, dataFimVigencia);
     }
 
-    private List<Plano> buscarPlanosIncompletos(YearMonth inicioVigencia, YearMonth fimVigencia) {
+    protected List<Plano> buscarPlanosIncompletosNaoAvaliados(YearMonth inicioVigencia, YearMonth fimVigencia) {
         LocalDate dataInicioVigencia = DataUtils.converterMesAnoParaInicioDoMesOuBuscarPadrao(inicioVigencia);
         LocalDate dataFimVigencia = DataUtils.converterMesAnoParaFimDoMesOuBuscarPadrao(fimVigencia);
 
-        return planoRepository.buscarPorVigenciaIncompletos(dataInicioVigencia, dataFimVigencia);
+        return planoRepository.buscarPorVigenciaIncompletosNaoAvaliados(dataInicioVigencia, dataFimVigencia);
+    }
+
+    protected List<Plano> buscarTodosPlanosPorVigencia(YearMonth inicioVigencia, YearMonth fimVigencia) {
+        LocalDate dataInicioVigencia = DataUtils.converterMesAnoParaInicioDoMesOuBuscarPadrao(inicioVigencia);
+        LocalDate dataFimVigencia = DataUtils.converterMesAnoParaFimDoMesOuBuscarPadrao(fimVigencia);
+
+        return planoRepository.buscarPlanosPorVigencia(dataInicioVigencia, dataFimVigencia);
+    }
+
+    protected List<Plano> buscarPlanosNaoAvaliados(YearMonth inicioVigencia, YearMonth fimVigencia) {
+        LocalDate dataInicioVigencia = DataUtils.converterMesAnoParaInicioDoMesOuBuscarPadrao(inicioVigencia);
+        LocalDate dataFimVigencia = DataUtils.converterMesAnoParaFimDoMesOuBuscarPadrao(fimVigencia);
+
+        return planoRepository.buscarPorVigenciaTodosNaoAvaliados(dataInicioVigencia, dataFimVigencia);
     }
 
 
@@ -149,25 +163,12 @@ public class PlanoService {
         }
     }
 
+    public Integer buscarQuantidadeDePlanos(YearMonth inicioVigencia, YearMonth fimVigencia) {
 
-    // ========================================================================
-    // 4. PAGINAÇÃO GENERALIZADA (LEGADO)
-    // ========================================================================
+        LocalDate dataInicioVigencia = DataUtils.converterMesAnoParaInicioDoMesOuBuscarPadrao(inicioVigencia);
+        LocalDate dataFimVigencia = DataUtils.converterMesAnoParaFimDoMesOuBuscarPadrao(fimVigencia);
 
-    private <T> Page<T> paginarLista(List<T> lista, Pageable pageable) {
+        return planoRepository.buscarQuantidadeDePlanos(dataInicioVigencia, dataFimVigencia);
 
-        int numeroDoElementoDoInicioDaPagina = (int) pageable.getOffset();
-        int numeroDoElementoDoFimDaPagina = Math.min((numeroDoElementoDoInicioDaPagina + pageable.getPageSize()), lista.size());
-
-        List<T> subListaDaPagina;
-
-        if (numeroDoElementoDoInicioDaPagina > lista.size()) {
-            subListaDaPagina = new ArrayList<>(); // Página vazia se o usuário for longe demais
-        } else {
-            subListaDaPagina = lista.subList(numeroDoElementoDoInicioDaPagina, numeroDoElementoDoFimDaPagina);
-        }
-
-        // 3. Transforma a sub-lista de volta em um objeto Page<T> do Spring!
-        return new PageImpl<>(subListaDaPagina, pageable, lista.size());
     }
 }

@@ -13,8 +13,8 @@
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="/painel">Início</a></li>
-                        <li class="breadcrumb-item active">Por Servidor</li>
+                        <li class="breadcrumb-item"><a href="/view/dashboard">Planos de Trabalho</a></li>
+                        <li class="breadcrumb-item active">Buscar por Servidor</li>
                     </ol>
                 </div>
             </div>
@@ -24,6 +24,9 @@
     <!-- Conteúdo -->
     <div class="content">
         <div class="container-fluid">
+
+            <!-- Card explicativo da consulta -->
+            <div th:replace="~{componentes :: cardExplicativo('fas fa-user', 'Buscar por Servidor', 'Retorna <strong>todos os planos de trabalho</strong> vinculados à matrícula SIAPE informada — completos ou incompletos, avaliados ou não. Funciona como o <strong>histórico completo do servidor</strong>, do plano mais recente ao mais antigo.', null)}"></div>
 
             <!-- Formulário de busca -->
             <div class="card">

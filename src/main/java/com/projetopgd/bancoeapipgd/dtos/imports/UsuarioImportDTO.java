@@ -23,16 +23,20 @@ public class UsuarioImportDTO {
     @Setter(AccessLevel.NONE)
     private String email;
 
-
     @Setter(AccessLevel.NONE)
     private String nome;
 
-    @JsonProperty("nome_perfil")
+    @Setter(AccessLevel.NONE)
     private TipoPerfil tipoPerfil;
 
     @Setter(AccessLevel.NONE)
     private String unidadeAtual;
 
+
+    @JsonProperty("nome_perfil")
+    public void setTipoPerfil(TipoPerfil tipoPerfilJson) {
+        this.tipoPerfil = tipoPerfilJson == null ? TipoPerfil.SEM_PERFIL : tipoPerfilJson;
+    }
 
     @JsonProperty("matricula")
     public void setMatricula(String matriculaJson) {

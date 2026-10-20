@@ -282,4 +282,81 @@
     </div>
 
 
+    <!-- ============================ CARD DE DONUT (DASHBOARD) ============================ -->
+    <div th:fragment="cardDonut(titulo, resumo, idCanvas, corCard)" class="col-lg-4">
+        <div class="card card-outline shadow-sm" th:classappend="${corCard}">
+            <div class="card-header">
+                <h3 class="card-title font-weight-bold">
+                    <i class="fas fa-chart-pie mr-2"></i><span th:text="${titulo}">Título</span>
+                    <small class="text-muted" th:text="${resumo.rotuloPeriodo}">--</small>
+                </h3>
+            </div>
+            <div class="card-body">
+                <div style="height: 270px; position: relative;">
+                    <canvas th:id="${idCanvas}"></canvas>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-4 px-1">
+                        <div class="stat-suave suave-vermelho text-center" data-toggle="tooltip"
+                             title="Planos cuja execução ficou abaixo da carga horária prevista para o período (menor que 100%).">
+                            <i class="fas fa-user-clock stat-icone"></i>
+                            <div class="stat-num" th:text="${resumo.qtdPendenciaServidor}">--</div>
+                            <div class="stat-label">Pend. Servidor</div>
+                        </div>
+                    </div>
+                    <div class="col-4 px-1">
+                        <div class="stat-suave suave-amarelo text-center" data-toggle="tooltip"
+                             title="Planos com execução concluída (maior ou igual a 100%), pendentes de avaliação pela chefia imediata.">
+                            <i class="fas fa-user-tie stat-icone"></i>
+                            <div class="stat-num" th:text="${resumo.qtdPendenciaChefia}">--</div>
+                            <div class="stat-label">Pend. Chefia</div>
+                        </div>
+                    </div>
+                    <div class="col-4 px-1">
+                        <div class="stat-suave suave-verde text-center" data-toggle="tooltip"
+                             title="Percentual de planos já avaliados, concluindo o fluxo no ANTT Pró — incluindo os que não atingiram a meta de horas prevista para o período do plano.">
+                            <i class="fas fa-percentage stat-icone"></i>
+                            <div class="stat-num" th:text="${#numbers.formatDecimal(resumo.taxaAdimplencia, 1, 1, 'COMMA')} + '%'">--</div>
+                            <div class="stat-label">Adimplência</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ============================ CARD DE RANKING TOP 5 (DASHBOARD) ============================ -->
+    <div th:fragment="cardTop5(titulo, resumo, idCanvas, corCard)" class="col-lg-6">
+        <div class="card card-outline shadow-sm" th:classappend="${corCard}">
+            <div class="card-header">
+                <h3 class="card-title font-weight-bold">
+                    <i class="fas fa-trophy mr-2"></i><span th:text="'Top 5 Unidades — ' + ${titulo}">Título</span>
+                    <small class="text-muted" th:text="'(acumulado: ' + ${resumo.rotuloPeriodo} + ')'">--</small>
+                    <small class="text-muted d-block mt-1 font-weight-normal">
+                        <i class="fas fa-info-circle mr-1"></i>Ranking por planos — um servidor pode ter mais de um plano pendente.
+                    </small>
+                </h3>
+            </div>
+            <div class="card-body" style="height: 320px; position: relative;">
+                <canvas th:id="${idCanvas}"></canvas>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ============================ CARD EXPLICATIVO (CONSULTAS) ============================ -->
+    <!-- Explica, no topo de cada consulta, o que aquela busca retorna.
+         'texto' e 'observacao' aceitam HTML (ex.: <strong>) pois usam th:utext;
+         'observacao' é opcional: passe null para não exibir a 2ª linha. -->
+    <div th:fragment="cardExplicativo(icone, titulo, texto, observacao)"
+         class="callout callout-info bg-white shadow-sm p-3 mb-4">
+        <h5 class="font-weight-bold mb-1">
+            <i class="mr-2 text-info" th:classappend="${icone}"></i><span th:text="${titulo}">Título da consulta</span>
+        </h5>
+        <p class="text-muted mb-0" th:utext="${texto}">Descrição do que a consulta retorna.</p>
+        <p th:if="${observacao != null}" class="text-muted small mb-0 mt-2" th:utext="${observacao}">Observação.</p>
+    </div>
+
+
 </div>

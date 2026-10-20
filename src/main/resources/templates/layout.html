@@ -50,8 +50,9 @@
     <!-- Main Sidebar Container -->
     <aside class="main-sidebar sidebar-dark-primary elevation-4" th:fragment="sidebar">
         <!-- Brand Logo -->
-        <a class="brand-link text-center" href="#">
-            <img alt="Logo ANTT" src="/imgs/logo-antt-colorida.png" style="max-height: 120px; width: auto;">
+        <a class="brand-link" href="/view/home">
+            <img alt="Brasão ANTT" class="brand-image" src="/imgs/logo-antt-simbolo.png" style="max-height: 42px;">
+            <span class="brand-text font-weight-light">ANTT &middot; PGD</span>
         </a>
         <!-- Sidebar -->
         <div class="sidebar">
@@ -62,40 +63,48 @@
                     role="menu">
                     <!-- Add icons to the links using the .nav-icon class
                        with font-awesome or any other icon font library -->
+
                     <li class="nav-item menu-open">
-                        <a class="nav-link active" href="#">
-                            <i class="nav-icon fas fa-folder-open"></i>
+                        <a class="nav-link" href="#">
+                            <i class="nav-icon fas fa-clipboard-list"></i>
                             <p>
-                                Consultar Planos
+                                Planos de Trabalho
                                 <i class="right fas fa-angle-left"></i>
                             </p>
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
+                                <a class="nav-link" href="/view/dashboard">
+                                    <i class="nav-icon fas fa-chart-pie"></i>
+                                    <p>Painel</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
                                 <a class="nav-link" href="/view/planos/por-servidor">
                                     <i class="nav-icon fas fa-user"></i>
-                                    <p>Por Servidor</p>
+                                    <p>Buscar por Servidor</p>
                                 </a>
                             </li>
 
                             <li class="nav-item">
                                 <a class="nav-link" th:href="@{/view/planos/filtro-periodo(tipoConsulta='pendencia-servidor')}">
-                                    <i class="nav-icon fas fa-clock"></i>
+                                    <i class="nav-icon fas fa-user-clock"></i>
                                     <p>Pendência do Servidor</p>
                                 </a>
                             </li>
 
                             <li class="nav-item">
-                                     <a class="nav-link" th:href="@{/view/planos/filtro-periodo(tipoConsulta='pendencia-chefia')}">
-                                    <i class="nav-icon fas fa-briefcase"></i>
+                                <a class="nav-link" th:href="@{/view/planos/filtro-periodo(tipoConsulta='pendencia-chefia')}">
+                                    <i class="nav-icon fas fa-user-tie"></i>
                                     <p>Pendência da Chefia</p>
                                 </a>
                             </li>
 
-                             <li class="nav-item">
+                            <li class="nav-item">
                                 <a class="nav-link" th:href="@{/view/planos/filtro-periodo(tipoConsulta='por-periodo')}">
                                     <i class="nav-icon fas fa-calendar-alt"></i>
-                                    <p>Por Período</p>
+                                    <p>Consulta por Período</p>
                                 </a>
                             </li>
                         </ul>
@@ -127,10 +136,10 @@
     <footer class="main-footer" th:fragment="footer">
         <!-- To the right -->
         <div class="float-right d-none d-sm-inline">
-            Texto rodapé direita.
+            Sistema de Monitoramento do PGD &middot; v1.0.0
         </div>
         <!-- Default to the left -->
-        <strong>Todos os Direitos Reservados para: ANTT>SUSPI>GESPE>CFPGD</strong>
+        <strong>&copy; 2026 ANTT &middot; CFPGD</strong> &mdash; Todos os direitos reservados.
     </footer>
 </div>
 <!-- ./wrapper -->

@@ -1,6 +1,7 @@
 package com.projetopgd.bancoeapipgd.entities;
 
 
+import com.projetopgd.bancoeapipgd.dtos.imports.PlanoImportDTO;
 import com.projetopgd.bancoeapipgd.dtos.imports.UsuarioImportDTO;
 import com.projetopgd.bancoeapipgd.enums.TipoPerfil;
 import jakarta.persistence.*;
@@ -39,6 +40,15 @@ public class Usuario {
         nome = dto.getNome();
         tipoPerfil = dto.getTipoPerfil();
         unidadeAtual = dto.getUnidadeAtual();
+    }
+
+    public Usuario(PlanoImportDTO dto) {
+        id = dto.getId();
+        matricula = dto.getUsuario().getMatricula();
+        email = dto.getUsuario().getEmail();
+        nome = dto.getUsuario().getNome();
+        tipoPerfil = dto.getUsuario().getTipoPerfil();
+        unidadeAtual = dto.getUsuario().getUnidadeAtual();
     }
 
     public Usuario(Long id) {

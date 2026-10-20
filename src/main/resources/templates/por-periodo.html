@@ -13,8 +13,8 @@
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="/painel">Início</a></li>
-                        <li class="breadcrumb-item active">Por Período</li>
+                        <li class="breadcrumb-item"><a href="/view/dashboard">Planos de Trabalho</a></li>
+                        <li class="breadcrumb-item active">Consulta por Período</li>
                     </ol>
                 </div>
             </div>
@@ -25,10 +25,11 @@
     <div class="content">
         <div class="container-fluid">
             <!-- Resultados -->
-            <div th:if="${dadosBackend != null}">
+            <div th:if="${pagina != null}">
 
-                <!-- Dados do servidor-->
-                <div th:replace="~{componentes :: agrupamentoServidorUnidadePlanos(${dadosBackend})}">
+               <div th:replace="~{componentes :: agrupamentoServidorUnidadePlanos(${pagina.content})}"></div>
+
+                <div th:replace="~{componentes :: paginacaoPadrao(${pagina}, '/view/planos/por-periodo')}"></div>
                     
                 </div>
             </div>
