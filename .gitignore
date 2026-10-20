@@ -56,3 +56,6 @@ application-secrets.properties
 ### Logs ###
 *.log
 logs/
+
+### Claude Code (configuração local) ###
+.claude/

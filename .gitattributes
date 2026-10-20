@@ -1,2 +1,7 @@
 /mvnw text eol=lf
 *.cmd text eol=crlf
+
+# Bibliotecas de terceiros (AdminLTE, Bootstrap, Chart.js...) não contam
+# nas estatísticas de linguagem do GitHub
+src/main/resources/static/plugins/** linguist-vendored
+src/main/resources/static/dist/**    linguist-vendored
